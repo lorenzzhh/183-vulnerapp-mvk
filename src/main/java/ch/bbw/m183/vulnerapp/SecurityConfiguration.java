@@ -40,7 +40,10 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http) {
         return http.httpBasic(Customizer.withDefaults())
                 .authorizeHttpRequests(auth ->
-                        auth.anyRequest().authenticated())
+                        auth.requestMatchers("/api/**")
+                                .authenticated()
+                                .anyRequest()
+                                .permitAll())
                 .build();
     }
 }
