@@ -4,6 +4,7 @@ import ch.bbw.m183.vulnerapp.repository.UserRepository;
 import ch.bbw.m183.vulnerapp.service.RestfulFormService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -42,11 +43,18 @@ public class SecurityConfiguration {
         return http.formLogin(restfulFormService.restfulFormLogin())
                 .exceptionHandling(restfulFormService.unauthorizedPerDefault())
                 .csrf(x -> x.disable())
+//                .csrf((csrf) -> csrf.spa())
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/**")
+                        auth.requestMatchers(HttpMethod.GET, "/api/blog")
+                                .permitAll()
+                                .requestMatchers("/api/**")
                                 .authenticated()
                                 .anyRequest()
                                 .permitAll())
+//                        auth.requestMatchers("/api/**")
+//                                .authenticated()
+//                                .anyRequest()
+//                                .permitAll())
                 .build();
     }
 }
