@@ -42,8 +42,9 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http, RestfulFormService restfulFormService) {
         return http.formLogin(restfulFormService.restfulFormLogin())
                 .exceptionHandling(restfulFormService.unauthorizedPerDefault())
-                .csrf(x -> x.disable())
+//                .csrf(x -> x.disable())
 //                .csrf((csrf) -> csrf.spa())
+                .csrf(csrf -> csrf.spa().ignoringRequestMatchers("/login"))
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers(HttpMethod.GET, "/api/blog")
                                 .permitAll()
