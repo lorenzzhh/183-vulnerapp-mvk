@@ -7,6 +7,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -19,16 +20,18 @@ import org.hibernate.annotations.CreationTimestamp;
 @Table(name = "blogs")
 public class BlogEntity {
 
-	@Id
-	UUID id;
+    @Id
+    UUID id;
 
-	@Column
-	@CreationTimestamp
-	LocalDateTime createdAt;
+    @Column
+    @CreationTimestamp
+    LocalDateTime createdAt;
 
-	@Column(columnDefinition = "text")
-	String title;
+    @Size(min = 3, max = 100)
+    @Column(columnDefinition = "text")
+    String title;
 
-	@Column(columnDefinition = "text")
-	String body;
+    @Size(min = 3, max = 1000)
+    @Column(columnDefinition = "text")
+    String body;
 }
