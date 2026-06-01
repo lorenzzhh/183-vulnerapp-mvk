@@ -18,7 +18,10 @@ Mit @Size, damit die Länge überprüft wird (Bei Passwort nicht mehr nötig, we
 
 - RBAC in der SecurityFilterChain in SecurityConfiguration.java
 
-- Unit-Tests
+- Unit-Tests für Rollen
+
+- SQL-Injection Schutz
+Ich denke, ich habe durch das ändern vom Select SQL-Injection verhindert (habe es aber nicht getestet :)
 
 
 2. Man könnte noch ganz viele weitere Sicherheitsmechanismen einbauen, z.B. Die Sicherheitsmechanismen bei den Zusatzaufgaben

@@ -26,8 +26,10 @@ public class UserService {
 		UserEntity user;
 		try {
 			user = (UserEntity) entityManager
-					.createNativeQuery("SELECT * from users where username='" + username + "'", UserEntity.class)
-					.setParameter("username", username)
+					.createNativeQuery(
+							"SELECT * FROM users WHERE username = ?1",
+							UserEntity.class)
+					.setParameter(1, username)
 					.getSingleResult();
 		} catch (NoResultException e) {
 			throw new InvalidPasswordException("invalid username or password");

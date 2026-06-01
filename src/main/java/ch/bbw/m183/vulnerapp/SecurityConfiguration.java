@@ -5,7 +5,9 @@ import ch.bbw.m183.vulnerapp.service.RestfulFormService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -25,7 +27,7 @@ public class SecurityConfiguration {
                 .findById(username)
                 .map(entity -> new User(entity.getUsername(),
                         entity.getPassword(),
-                        List.of()))
+                        List.of(new SimpleGrantedAuthority("ROLE_" + ("admin".equals(entity.getUsername()) ? "ADMIN" : "USER")))))
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
     }
@@ -39,11 +41,16 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, RestfulFormService restfulFormService) {
         return http.formLogin(restfulFormService.restfulFormLogin())
+                .httpBasic(Customizer.withDefaults())
                 .exceptionHandling(restfulFormService.unauthorizedPerDefault())
                 .csrf(csrf -> csrf.spa().ignoringRequestMatchers("/login"))
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers(HttpMethod.GET, "/api/blog")
                                 .permitAll()
+                                .requestMatchers("/api/admin123/**")
+                                .hasRole("ADMIN")
+                                .requestMatchers("/api/user/**")
+                                .hasAnyRole("USER", "ADMIN")
                                 .requestMatchers("/api/**")
                                 .authenticated()
                                 .anyRequest()
