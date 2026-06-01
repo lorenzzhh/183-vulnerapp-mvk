@@ -30,6 +30,9 @@ dependencies {
 	testRuntimeOnly 'com.h2database:h2'
 
 	implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	testImplementation 'org.springframework.boot:spring-boot-webtestclient'
+	testImplementation 'org.springframework.security:spring-security-test' // for @WithMockUser
 }
 
 tasks.named('test') {
