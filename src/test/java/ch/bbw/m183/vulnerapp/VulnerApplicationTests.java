@@ -35,6 +35,14 @@ class VulnerApplicationTests {
 				.expectStatus().isOk();
 	}
 
+	@Test
+	void userEndpointsAllowUserRole() {
+		webTestClient.get().uri("/api/user/whoami")
+				.header(HttpHeaders.AUTHORIZATION, basicAuth("fuu", "bar123"))
+				.exchange()
+				.expectStatus().isOk();
+	}
+
 	private static String basicAuth(String username, String password) {
 		var credentials = username + ":" + password;
 		return "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
