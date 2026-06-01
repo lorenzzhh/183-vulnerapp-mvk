@@ -12,8 +12,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.when;
@@ -47,7 +47,7 @@ class UserServiceTest {
 
 		var result = userService.whoami("u", "Strong#Pass1");
 
-		assertTrue("u".equals(result.getUsername()));
+		assertEquals("u", result.getUsername());
 	}
 
 	@Test
