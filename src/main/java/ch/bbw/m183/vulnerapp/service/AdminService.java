@@ -9,6 +9,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,8 +19,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdminService {
 
 	private final UserRepository userRepository;
+	private final PasswordEncoder passwordEncoder;
+	private final PasswordValidator passwordValidator;
 
 	public UserEntity createUser(UserEntity newUser) {
+		passwordValidator.validateForStorage(newUser.getPassword());
+		newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
 		return userRepository.save(newUser);
 	}
 
@@ -33,8 +38,8 @@ public class AdminService {
 
 	@EventListener(ContextRefreshedEvent.class)
 	public void loadTestUsers() {
-		Stream.of(new UserEntity().setUsername("admin").setFullname("Super Admin").setPassword("super5ecret"),
-						new UserEntity().setUsername("fuu").setFullname("Johanna Doe").setPassword("{noop}bar"))
-				.forEach(this::createUser);
+		Stream.of(new UserEntity().setUsername("admin").setFullname("Super Admin").setPassword("$2b$12$0eRVxfVbgdNbItYwQ2K0heY6DKMFfCM69xoCqPNgPMKvxL7OfXI5O"),
+						new UserEntity().setUsername("fuu").setFullname("Johanna Doe").setPassword("$2b$12$ufvVta53fVL0T4asWhILiOb3QEVMz9gRGO1RLZXNLmAQcX8uATTNa"))
+				.forEach(userRepository::save);
 	}
 }
