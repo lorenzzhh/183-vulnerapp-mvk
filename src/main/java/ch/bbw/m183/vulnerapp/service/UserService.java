@@ -1,16 +1,16 @@
 package ch.bbw.m183.vulnerapp.service;
 
-import jakarta.persistence.EntityManager;
-
 import ch.bbw.m183.vulnerapp.datamodel.UserEntity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.StandardException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
 @Service
@@ -18,21 +18,33 @@ import org.springframework.web.server.ResponseStatusException;
 @RequiredArgsConstructor
 public class UserService {
 
-	private final EntityManager entityManager;
+    private final EntityManager entityManager;
+    private final PasswordEncoder passwordEncoder;
 
-	public UserEntity whoami(String username, String password) {
-		// native queries are more performant!!1 :P
-		var user = (UserEntity) entityManager.createNativeQuery("SELECT * from users where username='" + username + "'", UserEntity.class)
-			.getSingleResult();
-		if (password.equals(user.getPassword())) {
-			return user;
+    public UserEntity whoami(String username, String password) {
+        // native queries are more performant!!1 :P
+		UserEntity user;
+		try {
+			user = (UserEntity) entityManager
+					.createNativeQuery("SELECT * from users where username='" + username + "'", UserEntity.class)
+					.setParameter("username", username)
+					.getSingleResult();
+		} catch (NoResultException e) {
+			throw new InvalidPasswordException("invalid username or password");
 		}
-		throw new InvalidPasswordException("invalid password for user " + user.getUsername());
-	}
+		try {
+			if (passwordEncoder.matches(password, user.getPassword())) {
+				return user;
+			}
+		} catch (IllegalArgumentException e) {
+			log.warn("Stored password format invalid for user {}", user.getUsername());
+		}
+		throw new InvalidPasswordException("invalid username or password");
+    }
 
-	@ResponseStatus(HttpStatus.UNAUTHORIZED)
-	@StandardException
-	public static class InvalidPasswordException extends RuntimeException {
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @StandardException
+    public static class InvalidPasswordException extends RuntimeException {
 
-	}
+    }
 }

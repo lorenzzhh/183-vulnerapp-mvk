@@ -24,7 +24,6 @@ public class UserEntity {
 	@Column
 	String fullname;
 
-	@Size(min = 8, max = 100)
 	@Column
 	String password;
 
